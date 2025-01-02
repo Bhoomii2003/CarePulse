@@ -123,11 +123,9 @@ import { Appointment } from "@/types/appwrite.types";
 import { StatusBadge } from "../StatusBadge";
 import { AppointmentModal } from "../AppointmentModal";
 
-
-
 export const columns: ColumnDef<Appointment>[] = [
   {
-    header: "ID",
+    header: "#",
     cell: ({ row }) => {
       return <p className="text-14-medium ">{row.index + 1}</p>;
     },
@@ -137,7 +135,8 @@ export const columns: ColumnDef<Appointment>[] = [
     header: "Patient",
     cell: ({ row }) => {
       const appointment = row.original;
-      return <p className="text-14-medium ">{appointment.patient.name}</p>;
+      const patientName = appointment.patient?.name || "Unknown Patient"; // Fallback for missing patient
+      return <p className="text-14-medium">{patientName}</p>;
     },
   },
   {
@@ -145,9 +144,10 @@ export const columns: ColumnDef<Appointment>[] = [
     header: "Status",
     cell: ({ row }) => {
       const appointment = row.original;
+      const status = appointment.status || "Unknown Status"; // Fallback for missing status
       return (
         <div className="min-w-[115px]">
-          <StatusBadge status={appointment.status} />
+          <StatusBadge status={status} />
         </div>
       );
     },
@@ -157,11 +157,8 @@ export const columns: ColumnDef<Appointment>[] = [
     header: "Appointment",
     cell: ({ row }) => {
       const appointment = row.original;
-      return (
-        <p className="text-14-regular min-w-[100px]">
-          {formatDateTime(appointment.schedule).dateTime}
-        </p>
-      );
+      const dateTime = formatDateTime(appointment.schedule)?.dateTime || "Unknown Schedule"; // Fallback for missing schedule
+      return <p className="text-14-regular min-w-[100px]">{dateTime}</p>;
     },
   },
   {
@@ -177,13 +174,13 @@ export const columns: ColumnDef<Appointment>[] = [
       return (
         <div className="flex items-center gap-3">
           <Image
-            src={doctor?.image!}
+            src={doctor?.image || "/default-doctor.png"} // Fallback for missing image
             alt="doctor"
             width={100}
             height={100}
             className="size-8"
           />
-          <p className="whitespace-nowrap">Dr. {doctor?.name}</p>
+          <p className="whitespace-nowrap">Dr. {doctor?.name || "Unknown Doctor"}</p> {/* Fallback for missing doctor */}
         </div>
       );
     },
@@ -197,16 +194,16 @@ export const columns: ColumnDef<Appointment>[] = [
       return (
         <div className="flex gap-1">
           <AppointmentModal
-            patientId={appointment.patient.$id}
-            userId={appointment.userId}
+            patientId={appointment.patient?.$id || ""}
+            userId={appointment.userId || ""}
             appointment={appointment}
             type="schedule"
             title="Schedule Appointment"
             description="Please confirm the following details to schedule."
           />
           <AppointmentModal
-            patientId={appointment.patient.$id}
-            userId={appointment.userId}
+            patientId={appointment.patient?.$id || ""}
+            userId={appointment.userId || ""}
             appointment={appointment}
             type="cancel"
             title="Cancel Appointment"
@@ -217,3 +214,9 @@ export const columns: ColumnDef<Appointment>[] = [
     },
   },
 ];
+
+
+
+       
+    
+           
